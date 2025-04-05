@@ -12,17 +12,22 @@
 
 #include "shader.h"
 
-class Terrain {
+class Terrain
+{
 public:
     Terrain() = default;
+
     ~Terrain() = default;
 
-    void load(const std::string& path);
-    void loadVertices(const std::string& path);
+    void load(const std::string &path);
+
+    void loadVertices(const std::string &path);
+
     void loadIndices();
+
     void loadBuffers();
 
-    void render(const Shader& shader, const glm::mat4 &projection, const glm::mat4 &view) const;
+    void render(const Shader &shader, const glm::mat4 &projection, const glm::mat4 &view) const;
 
     void free();
 
@@ -42,7 +47,6 @@ private:
     unsigned int _num_strips{0};
     unsigned int _num_vertices_per_strip{0};
 };
-
 
 
 #endif //TERRAIN_H

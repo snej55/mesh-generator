@@ -1,13 +1,15 @@
 #include "src/app.h"
 
-int main() {
+int main()
+{
     // initialization
     App app{640, 640, "OpenGL window"};
     app.enableDepthTesting();
     app.setCameraEnabled(true);
 
     // main loop
-    while (!app.shouldClose()) {
+    while (!app.shouldClose())
+    {
         app.handleInput();
 
         app.clear();

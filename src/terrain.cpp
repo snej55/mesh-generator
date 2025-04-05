@@ -10,28 +10,32 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <STB/stb_image.h>
 
-void Terrain::load(const std::string& path) {
+void Terrain::load(const std::string &path)
+{
     free();
     loadVertices(path);
     loadIndices();
     loadBuffers();
 }
 
-void Terrain::loadVertices(const std::string& path) {
+void Terrain::loadVertices(const std::string &path)
+{
     // load height map data
-    unsigned char* data {stbi_load(path.c_str(), &_width, &_height, &_channels, 0)};
+    unsigned char *data{stbi_load(path.c_str(), &_width, &_height, &_channels, 0)};
 
     // apply scale + shift to height data
-    constexpr float yScale {64.0f / 256.0f};
-    constexpr float yShift {16.0f};
+    constexpr float yScale{64.0f / 256.0f};
+    constexpr float yShift{16.0f};
 
     // get data
-    for (unsigned int x {0}; x < _width; ++x) {
-        for (unsigned int y {0}; y < _height; ++y) {
+    for (unsigned int x{0}; x < _width; ++x)
+    {
+        for (unsigned int y{0}; y < _height; ++y)
+        {
             // get texel for (x, y) tex coord
-            const unsigned char* texel {data + (y + _width * x) * _channels};
+            const unsigned char *texel{data + (y + _width * x) * _channels};
             // raw height from coordinate
-            const unsigned char height {texel[0]};
+            const unsigned char height{texel[0]};
 
             // get vertex
             _vertices.push_back(-static_cast<float>(_height) / 2.0f + static_cast<float>(x)); // x
@@ -47,20 +51,25 @@ void Terrain::loadVertices(const std::string& path) {
     _num_vertices_per_strip = _width * 2; // one for each side
 }
 
-void Terrain::loadIndices() {
+void Terrain::loadIndices()
+{
     // iterate through each row
-    for (unsigned int i {0}; i < _height - 1; ++i) {
+    for (unsigned int i{0}; i < _height - 1; ++i)
+    {
         // each column in row
-        for (unsigned int j {0}; j < _width; ++j) {
+        for (unsigned int j{0}; j < _width; ++j)
+        {
             // each side of strip
-            for (unsigned int k {0}; k < 2; ++k) {
+            for (unsigned int k{0}; k < 2; ++k)
+            {
                 _indices.push_back(j + _width * (i + k)); // get index
             }
         }
     }
 }
 
-void Terrain::loadBuffers() {
+void Terrain::loadBuffers()
+{
     unsigned int terrainVAO, terrainVBO, terrainEBO;
 
     // vertex array object
@@ -70,37 +79,42 @@ void Terrain::loadBuffers() {
     // vertex buffer object
     glGenBuffers(1, &terrainVBO);
     glBindBuffer(GL_ARRAY_BUFFER, terrainVBO);
-    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(_vertices.size() * sizeof(float)), _vertices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(_vertices.size() * sizeof(float)), _vertices.data(),
+                 GL_STATIC_DRAW);
 
     // vertex data
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), reinterpret_cast<void*>(0));
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), reinterpret_cast<void *>(0));
     glEnableVertexAttribArray(0);
 
     // element buffer object
     glGenBuffers(1, &terrainEBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, terrainEBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(_indices.size() * sizeof(unsigned int)), _indices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(_indices.size() * sizeof(unsigned int)),
+                 _indices.data(), GL_STATIC_DRAW);
 
     VAO = terrainVAO;
     VBO = terrainVBO;
     EBO = terrainEBO;
 }
 
-void Terrain::render(const Shader& shader, const glm::mat4 &projection, const glm::mat4 &view) const {
+void Terrain::render(const Shader &shader, const glm::mat4 &projection, const glm::mat4 &view) const
+{
     shader.use();
     shader.setMat4("projection", projection);
     shader.setMat4("view", view);
 
     // render
     glBindVertexArray(VAO);
-    for (unsigned int strip{0}; strip < _num_strips; ++strip) {
+    for (unsigned int strip{0}; strip < _num_strips; ++strip)
+    {
         glDrawElements(GL_TRIANGLE_STRIP, static_cast<GLsizei>(_num_vertices_per_strip), GL_UNSIGNED_INT,
-            reinterpret_cast<void*>(sizeof(unsigned int) * _num_vertices_per_strip * strip));
+                       reinterpret_cast<void *>(sizeof(unsigned int) * _num_vertices_per_strip * strip));
     }
     glBindVertexArray(0);
 }
 
-void Terrain::free() {
+void Terrain::free()
+{
     // reset
     _width = 0;
     _height = 0;

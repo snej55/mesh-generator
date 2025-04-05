@@ -1,6 +1,22 @@
-#include <iostream>
+#include "src/app.h"
 
 int main() {
-    std::cout << "Hello World!\n";
+    // initialization
+    App app{640, 640, "OpenGL window"};
+    app.enableDepthTesting();
+    app.setCameraEnabled(true);
+
+    // main loop
+    while (!app.shouldClose()) {
+        app.handleInput();
+
+        app.clear();
+
+        app.tick();
+    }
+
+    // clean up
+    app.close();
+
     return 0;
 }

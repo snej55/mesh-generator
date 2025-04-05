@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.30)
 project(mesh_generator)
 
 set(CMAKE_CXX_STANDARD 20)
@@ -22,9 +22,28 @@ elseif (CMAKE_SYSTEM MATCHES Linux)
     set(GL_LIBS GL GLU glfw3 assimp)
 endif()
 
-add_executable(${PROJECT_NAME} main.cpp
+set(SOURCES main.cpp
         src/app.cpp
-        src/app.h)
+        src/app.h
+        src/extern/glad.c
+        src/shader.cpp
+        src/shader.h
+        src/texture.cpp
+        src/texture.h
+        src/shapes.h
+        src/objectShapes3D.h
+        src/objects.h
+        src/camera.h
+        src/mesh.cpp
+        src/mesh.h
+        src/model.cpp
+        src/model.h
+        src/postprocessing.h
+        src/cubemap.h
+        src/skybox.h
+)
+
+add_executable(${PROJECT_NAME} ${SOURCES})
 
 target_link_libraries(${PROJECT_NAME} ${GL_LIBS})
 

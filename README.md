@@ -1,3 +1,3 @@
 # Mesh Generator
 
-This is basic terrain generation project using OpenGL.
+This is basic heightmap renderer using my opengl wrapper.

@@ -15,6 +15,8 @@ int main()
     // main loop
     while (!app.shouldClose())
     {
+        // for wireframe rendering
+        // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         app.handleInput();
         
         app.clear();

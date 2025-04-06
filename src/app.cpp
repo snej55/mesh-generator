@@ -31,8 +31,8 @@ bool App::init(const int width, const int height, const char *title)
 {
     glfwInit();
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 #ifdef __APPLE__
@@ -286,7 +286,7 @@ void App::win_framebuffer_size_callback(GLFWwindow *window, int width, int heigh
 glm::mat4 App::getPerspectiveMatrix() const
 {
     return glm::perspective(glm::radians(CameraMan.getZoom()), static_cast<float>(_width) / static_cast<float>(_height),
-                            0.1f, 100.0f);
+                            0.1f, 100000.0f);
 }
 
 glm::mat4 App::getViewMatrix() const

@@ -11,7 +11,7 @@ int main()
     while (!app.shouldClose())
     {
         app.handleInput();
-
+        
         app.clear();
 
         app.tick();

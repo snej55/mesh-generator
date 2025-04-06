@@ -17,7 +17,7 @@ class Terrain
 public:
     Terrain() = default;
 
-    ~Terrain() = default;
+    ~Terrain();
 
     void load(const std::string &path);
 
@@ -27,7 +27,7 @@ public:
 
     void loadBuffers();
 
-    void render(const Shader &shader, const glm::mat4 &projection, const glm::mat4 &view) const;
+    void render(const Shader &shader, const glm::mat4 &projection, const glm::mat4 &view, const glm::mat4& model) const;
 
     void free();
 

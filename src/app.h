@@ -124,7 +124,7 @@ public:
     [[nodiscard]] bool getPostProcessingEnabled() const;
 
     // post-processing
-    [[nodiscard]] PostProcessor *getPostProcessor() const;
+    [[nodiscard]] PostProcessor* getPostProcessor() const;
 
 private:
     GLFWwindow *_window{nullptr};

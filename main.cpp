@@ -1,4 +1,5 @@
 #include "src/app.h"
+#include "src/terrain.h"
 
 int main()
 {
@@ -7,12 +8,18 @@ int main()
     app.enableDepthTesting();
     app.setCameraEnabled(true);
 
+    const Shader terrainShader {"data/shaders/heightMap.vert", "data/shaders/heightMap.frag"};
+    Terrain terrain{};
+    terrain.load("data/images/iceland_heightmap.png");
+
     // main loop
     while (!app.shouldClose())
     {
         app.handleInput();
         
         app.clear();
+
+        terrain.render(terrainShader, app.getPerspectiveMatrix(), app.getViewMatrix(), glm::mat4{1.0f});
 
         app.tick();
     }

@@ -7,10 +7,18 @@
 
 #include <glm/glm.hpp>
 
-#define STB_IMAGE_IMPLEMENTATION
+// #define STB_IMAGE_IMPLEMENTATION
 #include <STB/stb_image.h>
 
-void Terrain::load(const std::string &path)
+#include <iostream>
+
+Terrain::~Terrain()
+{
+    free();
+}
+
+
+void Terrain::load(const std::string& path)
 {
     free();
     loadVertices(path);
@@ -18,37 +26,44 @@ void Terrain::load(const std::string &path)
     loadBuffers();
 }
 
-void Terrain::loadVertices(const std::string &path)
+void Terrain::loadVertices(const std::string& path)
 {
     // load height map data
-    unsigned char *data{stbi_load(path.c_str(), &_width, &_height, &_channels, 0)};
-
-    // apply scale + shift to height data
-    constexpr float yScale{64.0f / 256.0f};
-    constexpr float yShift{16.0f};
-
-    // get data
-    for (unsigned int x{0}; x < _width; ++x)
+    stbi_set_flip_vertically_on_load(true);
+    unsigned char* data{stbi_load(path.c_str(), &_width, &_height, &_channels, 0)};
+    if (data)
     {
-        for (unsigned int y{0}; y < _height; ++y)
-        {
-            // get texel for (x, y) tex coord
-            const unsigned char *texel{data + (y + _width * x) * _channels};
-            // raw height from coordinate
-            const unsigned char height{texel[0]};
+        std::cout << "Loaded heightmap: " << _width << " * " << _height << std::endl;
+        // apply scale + shift to height data
+        constexpr float yScale{64.0f / 256.0f};
+        constexpr float yShift{16.0f};
 
-            // get vertex
-            _vertices.push_back(-static_cast<float>(_height) / 2.0f + static_cast<float>(x)); // x
-            // apply y scaling and shifting to y coord
-            _vertices.push_back(static_cast<float>(static_cast<int>(height)) * yScale - yShift);
-            _vertices.push_back(-static_cast<float>(_width) / 2.0f + static_cast<float>(y)); // z
+        // get data
+        for (unsigned int x{0}; x < _height; ++x)
+        {
+            for (unsigned int y{0}; y < _width; ++y)
+            {
+                // get texel for (x, y) tex coord
+                unsigned char* texel{data + (y + _width * x) * _channels};
+                // raw height from coordinate
+                unsigned char height{*texel};
+
+                // get vertex
+                _vertices.push_back(-static_cast<float>(_height) / 2.0f + static_cast<float>(x)); // x
+                // apply y scaling and shifting to y coord
+                _vertices.push_back(static_cast<float>(static_cast<int>(height)) * yScale - yShift);
+                _vertices.push_back(-static_cast<float>(_width) / 2.0f + static_cast<float>(y)); // z
+            }
         }
+
+        _num_strips = _height - 1; // each strip is one row
+        _num_vertices_per_strip = _width * 2; // one for each side
+    } else
+    {
+        std::cout << "Failed to load texture: " << path << std::endl;
     }
 
     stbi_image_free(data);
-
-    _num_strips = _height - 1; // each strip is one row
-    _num_vertices_per_strip = _width * 2; // one for each side
 }
 
 void Terrain::loadIndices()
@@ -97,11 +112,12 @@ void Terrain::loadBuffers()
     EBO = terrainEBO;
 }
 
-void Terrain::render(const Shader &shader, const glm::mat4 &projection, const glm::mat4 &view) const
+void Terrain::render(const Shader &shader, const glm::mat4 &projection, const glm::mat4 &view, const glm::mat4& model) const
 {
     shader.use();
     shader.setMat4("projection", projection);
     shader.setMat4("view", view);
+    shader.setMat4("model", model);
 
     // render
     glBindVertexArray(VAO);
